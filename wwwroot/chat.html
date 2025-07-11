@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Medlemsnavet Chat</title>
+</head>
+<body>
+    <h1>Real-time Chat</h1>
+    <div>
+        <label for="userInput">User:</label>
+        <input type="text" id="userInput" />
+    </div>
+    <div>
+        <label for="messageInput">Message:</label>
+        <input type="text" id="messageInput" />
+        <button id="sendButton">Send Message</button>
+    </div>
+    <hr>
+    <ul id="messagesList"></ul>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+    <script>
+        // Establish a connection to the ChatHub
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub") // This must match the endpoint in Program.cs
+            .build();
+
+        // Disable the send button until the connection is established
+        document.getElementById("sendButton").disabled = true;
+
+        // This function is called by the HUB to deliver a message
+        connection.on("ReceiveMessage", function (user, message) {
+            const li = document.createElement("li");
+            li.textContent = `${user}: ${message}`;
+            document.getElementById("messagesList").appendChild(li);
+        });
+
+        // Start the connection
+        connection.start().then(function () {
+            console.log("SignalR Connected.");
+            document.getElementById("sendButton").disabled = false;
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        // Add event listener for the send button
+        document.getElementById("sendButton").addEventListener("click", function (event) {
+            const user = document.getElementById("userInput").value;
+            const message = document.getElementById("messageInput").value;
+
+            // Call the HUB method to send the message
+            connection.invoke("SendMessage", user, message).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>

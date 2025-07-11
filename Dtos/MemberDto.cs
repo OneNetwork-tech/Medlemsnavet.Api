@@ -9,4 +9,7 @@ public class MemberDto
     public string PhoneNumber { get; set; }
     public string PostalAddress { get; set; }
     public DateTime EntryDate { get; set; }
+
+    // Add this property
+    public bool IsActive { get; set; }
 }

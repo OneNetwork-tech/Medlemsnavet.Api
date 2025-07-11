@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36301.6 d17.14
+VisualStudioVersion = 17.14.36301.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medlemsnavet.Api", "Medlemsnavet.Api.csproj", "{57C6E6E2-B6CC-4B0F-AC0F-C3C8D95298AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medlemsnavet.Web", "..\Medlemsnavet.Web\Medlemsnavet.Web\Medlemsnavet.Web.csproj", "{CA60A787-80EC-4F1D-908C-D7188F81CEC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medlemsnavet.Web.Client", "..\Medlemsnavet.Web\Medlemsnavet.Web.Client\Medlemsnavet.Web.Client.csproj", "{BD95670F-F55C-4A1C-BAE8-2B70105CDE4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{57C6E6E2-B6CC-4B0F-AC0F-C3C8D95298AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57C6E6E2-B6CC-4B0F-AC0F-C3C8D95298AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57C6E6E2-B6CC-4B0F-AC0F-C3C8D95298AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA60A787-80EC-4F1D-908C-D7188F81CEC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA60A787-80EC-4F1D-908C-D7188F81CEC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA60A787-80EC-4F1D-908C-D7188F81CEC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA60A787-80EC-4F1D-908C-D7188F81CEC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD95670F-F55C-4A1C-BAE8-2B70105CDE4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD95670F-F55C-4A1C-BAE8-2B70105CDE4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD95670F-F55C-4A1C-BAE8-2B70105CDE4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD95670F-F55C-4A1C-BAE8-2B70105CDE4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

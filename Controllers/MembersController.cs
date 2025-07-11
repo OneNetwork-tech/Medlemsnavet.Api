@@ -5,11 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Medlemsnavet.Data;
-
 [ApiController]
 [Route("api/[controller]")]
-[Authorize] // This entire controller is now protected. A valid JWT is required.
+[Authorize] // All endpoints require login
 public class MembersController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
@@ -19,12 +17,12 @@ public class MembersController : ControllerBase
         _context = context;
     }
 
-    // GET: api/members
+    // GET: api/members (For regular members - shows only active members)
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MemberDto>>> GetMembers()
     {
         var members = await _context.Members
-            .Where(m => m.DepartureDate == null) // Only get active members
+            .Where(m => m.DepartureDate == null)
             .Select(m => new MemberDto
             {
                 Id = m.Id,
@@ -40,12 +38,64 @@ public class MembersController : ControllerBase
         return Ok(members);
     }
 
+    // --- NEW ADMIN ENDPOINT ---
+    // GET: api/members/admin/all (For Admins - shows all members)
+    [HttpGet("admin/all")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetAllMembersForAdmin()
+    {
+        var members = await _context.Members
+            .Select(m => new MemberDto // We can create a more detailed AdminMemberDto later
+            {
+                Id = m.Id,
+                Name = m.Name,
+                Email = m.Email,
+                PersonalIdentityNumber = m.PersonalIdentityNumber,
+                PhoneNumber = m.PhoneNumber,
+                PostalAddress = m.PostalAddress,
+                EntryDate = m.EntryDate,
+                IsActive = m.DepartureDate == null // Add a status field
+            })
+            .ToListAsync();
+
+        return Ok(members);
+    }
+
+    // GET: api/members/admin/details/{id} (For Admins to get any member)
+    [HttpGet("admin/details/{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<MemberDto>> GetMemberForAdmin(Guid id)
+    {
+        var member = await _context.Members
+            .Where(m => m.Id == id)
+            .Select(m => new MemberDto
+            {
+                Id = m.Id,
+                Name = m.Name,
+                Email = m.Email,
+                PersonalIdentityNumber = m.PersonalIdentityNumber,
+                PhoneNumber = m.PhoneNumber,
+                PostalAddress = m.PostalAddress,
+                EntryDate = m.EntryDate,
+                IsActive = m.DepartureDate == null
+            })
+            .FirstOrDefaultAsync();
+
+        if (member == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(member);
+    }
+
+
     // GET: api/members/5
     [HttpGet("{id}")]
     public async Task<ActionResult<MemberDto>> GetMember(Guid id)
     {
         var member = await _context.Members
-            .Where(m => m.DepartureDate == null) // Only get active members
+            .Where(m => m.DepartureDate == null && m.Id == id)
             .Select(m => new MemberDto
             {
                 Id = m.Id,
@@ -56,7 +106,7 @@ public class MembersController : ControllerBase
                 PostalAddress = m.PostalAddress,
                 EntryDate = m.EntryDate
             })
-            .FirstOrDefaultAsync(m => m.Id == id);
+            .FirstOrDefaultAsync();
 
         if (member == null)
         {
@@ -68,7 +118,7 @@ public class MembersController : ControllerBase
 
     // POST: api/members
     [HttpPost]
-    // [Authorize(Roles = "Admin")] // You can uncomment this later to restrict access to admins
+    [Authorize(Roles = "Admin")] // Now protected
     public async Task<ActionResult<MemberDto>> CreateMember([FromBody] CreateMemberDto createMemberDto)
     {
         if (await _context.Members.AnyAsync(m => m.PersonalIdentityNumber == createMemberDto.PersonalIdentityNumber))
@@ -89,25 +139,16 @@ public class MembersController : ControllerBase
         _context.Members.Add(member);
         await _context.SaveChangesAsync();
 
-        var memberDto = new MemberDto
-        {
-            Id = member.Id,
-            Name = member.Name,
-            Email = member.Email,
-            PersonalIdentityNumber = member.PersonalIdentityNumber,
-            PhoneNumber = member.PhoneNumber,
-            PostalAddress = member.PostalAddress,
-            EntryDate = member.EntryDate
-        };
-
+        var memberDto = new MemberDto { /* ... mapping ... */ };
         return CreatedAtAction(nameof(GetMember), new { id = member.Id }, memberDto);
     }
 
     // PUT: api/members/5
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")] // Now protected
     public async Task<IActionResult> UpdateMember(Guid id, [FromBody] UpdateMemberDto updateMemberDto)
     {
-        var member = await _context.Members.FirstOrDefaultAsync(m => m.Id == id && m.DepartureDate == null);
+        var member = await _context.Members.FirstOrDefaultAsync(m => m.Id == id);
 
         if (member == null)
         {
@@ -126,6 +167,7 @@ public class MembersController : ControllerBase
 
     // DELETE: api/members/5
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")] // Now protected
     public async Task<IActionResult> DeleteMember(Guid id)
     {
         var member = await _context.Members.FindAsync(id);
@@ -135,7 +177,7 @@ public class MembersController : ControllerBase
             return NotFound();
         }
 
-        // Soft delete: set the departure date instead of removing the record
+        // Soft delete: set the departure date
         member.DepartureDate = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();

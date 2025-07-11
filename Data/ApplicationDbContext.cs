@@ -19,10 +19,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Member> Members { get; set; }
     public DbSet<Post> Posts { get; set; }
 
-    // Add this line inside ApplicationDbContext.cs
+    // Comments
     public DbSet<Comment> Comments { get; set; }
 
+
+    // Events
+    public DbSet<Event> Events { get; set; }
+
     // This method is used to configure relationships between tables.
+
+    // Add this line inside ApplicationDbContext.cs
+    public DbSet<Invoice> Invoices { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         // This is crucial for Identity tables to be configured correctly.

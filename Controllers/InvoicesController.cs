@@ -1,5 +1,4 @@
-﻿using Medlemsnavet.Data;
-using Medlemsnavet.Dtos;
+﻿using Medlemsnavet.Dtos;
 using Medlemsnavet.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

@@ -126,7 +126,7 @@ public class EventsController : ControllerBase
     }
 
     // Helper method
-    private async Task<Member> GetCurrentMemberAsync()
+    private async Task<Member?> GetCurrentMemberAsync()
     {
         var userEmail = User.FindFirstValue(ClaimTypes.Name);
         if (string.IsNullOrEmpty(userEmail)) return null;
